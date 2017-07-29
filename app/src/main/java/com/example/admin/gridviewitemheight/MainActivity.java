@@ -3,6 +3,7 @@ package com.example.admin.gridviewitemheight;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -24,16 +25,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final GridView gridView = (GridView) findViewById(R.id.gridview);
         atypeEntities = new ArrayList<>();
+        addFirstItemData();
         for (int i = 0; i < 3; i++) {
             AtypeEntity atypeEntity = new AtypeEntity();
             atypeEntity.setAtype_kusercode("33");
             atypeEntity.setAtype_name("你是我意思最爱的人");
             atypeEntities.add(atypeEntity);
         }
-        AtypeEntity atypeEntitysss = new AtypeEntity();
-        atypeEntitysss.setAtype_name("njjkjjjjjjjjjjjj是我意思最爱的人jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
-        atypeEntitysss.setAtype_kusercode("33333");
-        atypeEntities.add(atypeEntitysss);
         gridView.setAdapter(new GridViewAdapter(gridView,this, atypeEntities));
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -50,6 +48,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * set first position data view heighter than others
+     */
+    private void addFirstItemData() {
+        AtypeEntity atypeEntitysss = new AtypeEntity();
+        atypeEntitysss.setAtype_name("njjkjjjjjjjjjjjj是我意思最爱的人jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+        atypeEntitysss.setAtype_kusercode("33333");
+        atypeEntities.add(atypeEntitysss);
+    }
+
     class GridViewAdapter extends BaseAdapter{
 
         private GridView gv;
@@ -64,31 +73,26 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return data.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return data.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return position;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
-
             Holder holder;
             if (convertView == null) {
                 holder = new Holder();
-                convertView = View.inflate(context,
-                        R.layout.gridview, null);
+
+                convertView = View.inflate(context, R.layout.item_gridview,null);
 
                 holder.atype_serial_num = (TextView) convertView
                         .findViewById(R.id.atype_serial_num);
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 convertView.setTag(holder);
                 // 绑定listener监听器，检测convertview的height
 
-                holder.update();
+               holder.update();
             } else {
                 holder = (Holder) convertView.getTag();
             }
@@ -120,6 +124,10 @@ public class MainActivity extends AppCompatActivity {
             public TextView atype_name;
             public TextView atype_kusercode;
 
+            /**
+             * 该方法其实真正需要的是两个参数 一个是其中某一个控件（用于获取到position）
+             * 另一个是convertView 用于测量每一个Cell的高度
+             */
             public void update() {
 
                 // 精确计算GridView的item高度
@@ -136,20 +144,16 @@ public class MainActivity extends AppCompatActivity {
                                     int height = v.getHeight();
                                     View view = gv.getChildAt(position - 1);
                                     if (view == null) return;
-                                    int lastheight = view.getHeight();
+                                    int lastHeight = view.getHeight();
 
                                     // 得到同一行的最后一个item和前一个item想比较，把谁的height大，就把两者中
                                     // height小的item的高度设定为height较大的item的高度一致，也就是保证同一
                                     // // 行高度相等即可
 
-                                    if (height > lastheight) {
-                                        view.setLayoutParams(new GridView.LayoutParams(
-                                                GridView.LayoutParams.FILL_PARENT,
-                                                height));
-                                    } else if (height < lastheight) {
-                                        v.setLayoutParams(new GridView.LayoutParams(
-                                                GridView.LayoutParams.FILL_PARENT,
-                                                lastheight));
+                                    if (height > lastHeight) {
+                                        view.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT, height));
+                                    } else if (height < lastHeight) {
+                                        v.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT, lastHeight));
                                     }
                                 }
                             }
